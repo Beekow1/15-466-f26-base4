@@ -15,43 +15,52 @@
 #include <limits>
 #include <string>
 
+struct Mesh
+{
+	// Meshes are vertex ranges (and primitive types) in their MeshBuffer:
 
-struct Mesh {
-	//Meshes are vertex ranges (and primitive types) in their MeshBuffer:
+	GLenum type = GL_TRIANGLES; // type of primitives in mesh
+	GLuint start = 0;			// index of first vertex
+	GLuint count = 0;			// count of vertices
 
-	GLenum type = GL_TRIANGLES; //type of primitives in mesh
-	GLuint start = 0; //index of first vertex
-	GLuint count = 0; //count of vertices
-
-	//Bounding box.
-	//useful for debug visualization and (perhaps, eventually) collision detection:
-	glm::vec3 min = glm::vec3( std::numeric_limits< float >::infinity());
-	glm::vec3 max = glm::vec3(-std::numeric_limits< float >::infinity());
+	// Bounding box.
+	// useful for debug visualization and (perhaps, eventually) collision detection:
+	glm::vec3 min = glm::vec3(std::numeric_limits<float>::infinity());
+	glm::vec3 max = glm::vec3(-std::numeric_limits<float>::infinity());
 };
 
-struct MeshBuffer {
-	//construct from a file:
-	// note: will throw if file fails to read.
+struct MeshBuffer
+{
+	struct Vertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::u8vec4 Color;
+		glm::vec2 TexCoord;
+	};
+	// construct from a file:
+	//  note: will throw if file fails to read.
 	MeshBuffer(std::string const &filename);
 
-	//look up a particular mesh by name:
-	// note: will throw if mesh not found.
+	// look up a particular mesh by name:
+	//  note: will throw if mesh not found.
 	const Mesh &lookup(std::string const &name) const;
-	
-	//build a vertex array object that links this vbo to attributes to a program:
-	// note: will throw if program defines attributes not contained in this buffer
+
+	// build a vertex array object that links this vbo to attributes to a program:
+	//  note: will throw if program defines attributes not contained in this buffer
 	GLuint make_vao_for_program(GLuint program) const;
 
-	//This is the OpenGL vertex buffer object containing the mesh data:
+	// This is the OpenGL vertex buffer object containing the mesh data:
 	GLuint buffer = 0;
 
 	//-- internals ---
 
-	//used by the lookup() function:
-	std::map< std::string, Mesh > meshes;
+	// used by the lookup() function:
+	std::map<std::string, Mesh> meshes;
 
-	//These 'Attrib' structures describe the location of various attributes within the buffer (in exactly format wanted by glVertexAttribPointer). They are set when the file is loaded and are used by the "make_vao_for_program" call:
-	struct Attrib {
+	// These 'Attrib' structures describe the location of various attributes within the buffer (in exactly format wanted by glVertexAttribPointer). They are set when the file is loaded and are used by the "make_vao_for_program" call:
+	struct Attrib
+	{
 		GLint size = 0;
 		GLenum type = 0;
 		GLboolean normalized = GL_FALSE;
@@ -60,7 +69,7 @@ struct MeshBuffer {
 
 		Attrib() = default;
 		Attrib(GLint size_, GLenum type_, GLboolean normalized_, GLsizei stride_, GLsizei offset_)
-		: size(size_), type(type_), normalized(normalized_), stride(stride_), offset(offset_) { }
+			: size(size_), type(type_), normalized(normalized_), stride(stride_), offset(offset_) {}
 	};
 
 	Attrib Position;

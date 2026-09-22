@@ -2,50 +2,43 @@
 
 #include "Scene.hpp"
 #include "Sound.hpp"
+#include "TextRenderer.hpp"
+#include "Story.hpp"
 
 #include <glm/glm.hpp>
 
 #include <vector>
 #include <deque>
 
-struct PlayMode : Mode {
+struct PlayMode : Mode
+{
 	PlayMode();
 	virtual ~PlayMode();
 
-	//functions called by main loop:
+	// functions called by main loop:
 	virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 
-	//----- game state -----
+	TextRenderer text;
 
-	//input tracking:
-	struct Button {
-		uint8_t downs = 0;
-		uint8_t pressed = 0;
-	} left, right, down, up;
+	struct Image
+	{
+		GLuint texture = 0;
+		glm::uvec2 size = glm::uvec2(0);
+	};
 
-	//local copy of the game scene (so code can change it during gameplay):
-	Scene scene;
+	glm::vec2 character_position = glm::vec2(135.0f, 55.0f);
+	glm::vec2 last_position = character_position;
+	float char_timer = 0.0f;
 
-	//hexapod leg to wobble:
-	Scene::Transform *hip = nullptr;
-	Scene::Transform *upper_leg = nullptr;
-	Scene::Transform *lower_leg = nullptr;
-	glm::quat hip_base_rotation;
-	glm::quat upper_leg_base_rotation;
-	glm::quat lower_leg_base_rotation;
-	float wobble = 0.0f;
+	Image backdrop, character, foreground;
+	Image fake_visa, real_visa;
+	GLuint image_vao = 0, image_vbo = 0;
+	Story story;
 
-	glm::vec3 get_leg_tip_position();
+	void generate_story();
 
-	//music coming from the tip of the leg (as a demonstration):
-	std::shared_ptr< Sound::PlayingSample > leg_tip_loop;
-
-	//car honk sound:
-	std::shared_ptr< Sound::PlayingSample > honk_oneshot;
-	
-	//camera:
-	Scene::Camera *camera = nullptr;
-
+	Image load_image(std::string const &filename);
+	void draw_image(Image const &image, glm::vec2 position);
 };
