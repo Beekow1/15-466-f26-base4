@@ -1,12 +1,14 @@
-# (TODO: your game's title)
+# A Game About Running A Border Checkpoint
 
-Author: (TODO: your name)
+Author: Daniel Stankiewicz
 
-Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
+Design: There are a few interesting things I did here, first, I wrote a lua script to export fonts from aseprite, and secondly, I tried to use a very limited (gba-like) color palette to make this (https://lospec.com/palette-list/2bit-demichrome).
 
-Text Drawing: (TODO: how does the text drawing in this game work? Is text precomputed? Rendered at runtime? What files or utilities are involved?)
+Text Drawing: Text is shaped and drawn in TextRenderer.cpp and hpp. We initialize and load our pixel font bdf using FreeType, and pack these into a 128x128 texture atlas. We then pass a quad for each glyph to our vertex buffer. Each frame when we call draw_text(), harfbuzz shapes each line into our ids offsets and advances, and we use those to positions our glyph quads, and render. Because we are using pixel art here, we use nearest neighbor for filtering to keep our pixels sharp.
 
-Choices: (TODO: how does the game store choices and narrative? How are they authored? Anything nifty you want to point out?)
+Glyphs are preprocessed at runtime and then text is generated on the fly.
+
+Choices: The choice storage is a bit lackluster here honestly, we store a tree with choices and traverse down it as the user makes their choices.
 
 Screen Shot:
 
@@ -14,9 +16,7 @@ Screen Shot:
 
 How To Play:
 
-(TODO: describe the controls and (if needed) goals/strategy.)
-
-Sources: (TODO: list a source URL for any assets you did not create yourself. Make sure you have a license for the asset.)
+Just use X and Z to pick choices. R resets.
 
 This game was built with [NEST](NEST.md).
 
